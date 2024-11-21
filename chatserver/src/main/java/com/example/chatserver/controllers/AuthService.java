@@ -70,7 +70,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void deleteFriend(String userId, String friendId) {
+    public User deleteFriend(String userId, String friendId) {
         User user = userRepository.findByUserId(userId);
         Set<String> friendIdSet = user.getFriendIdSet();
         friendIdSet.remove(friendId);
@@ -85,6 +85,7 @@ public class AuthService {
                 break;
             }
         }
+        return user;
     }
 
     public boolean changePassword(String userId, String password, String newPassword) {

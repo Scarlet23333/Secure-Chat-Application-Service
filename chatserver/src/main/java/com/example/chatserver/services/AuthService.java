@@ -1,6 +1,5 @@
-package com.example.chatserver.controllers;
+package com.example.chatserver.services;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.chatserver.models.ChatRoomRepository;
+import com.example.chatserver.models.ChatRoom;
 import com.example.chatserver.models.User;
-import com.example.chatserver.models.UserRepository;
+import com.example.chatserver.repositories.ChatRoomRepository;
+import com.example.chatserver.repositories.UserRepository;
 
 @Service
 public class AuthService {
@@ -49,22 +49,26 @@ public class AuthService {
         if (!userRepository.existsById(friendId)) return "Invalid Friend ID.";
         User user = userRepository.findByUserId(userId);
         Set<String> friendApplicationSenderIdSet = user.getFriendApplicationSenderIdSet();
-        if (friendApplicationSenderIdSet != null && friendApplicationSenderIdSet.contains(friendId)) {
+        if (user.getFriendIdSet().contains(friendId))
+            return "Friend already exists.";
+        else if (friendApplicationSenderIdSet.contains(friendId)) {
             Set<String> friendIdSet = user.getFriendIdSet();
-            if (friendIdSet == null) friendIdSet = new HashSet<>();
+            // if (friendIdSet == null) friendIdSet = new HashSet<>();
             friendIdSet.add(friendId);
             user.setFriendIdSet(friendIdSet);
             friendApplicationSenderIdSet.remove(friendId);
+            user.setFriendApplicationSenderIdSet(friendApplicationSenderIdSet);
             userRepository.save(user);
             return "Friend application accepted.";
         }
         else {
             User friend = userRepository.findByUserId(friendId);
             friendApplicationSenderIdSet = friend.getFriendApplicationSenderIdSet();
-            if (friendApplicationSenderIdSet == null) friendApplicationSenderIdSet = new HashSet<>();
+            // if (friendApplicationSenderIdSet == null) friendApplicationSenderIdSet = new HashSet<>();
             friendApplicationSenderIdSet.add(userId);
+            friend.setFriendApplicationSenderIdSet(friendApplicationSenderIdSet);
             userRepository.save(friend);
-            // TODO: send application to the friend
+            // send application to the friend in the controller
             return "Friend application sent.";
         }
     }
@@ -79,8 +83,9 @@ public class AuthService {
         // delete related chatroom
         Set<String> chatRoomIdSet = user.getChatRoomIdSet();
         for (String chatRoomId: chatRoomIdSet) {
-            List<String> memberIdList = chatRoomRepository.findByChatRoomId(chatRoomId).getMemberIdList();
-            if (memberIdList.size() == 2 && memberIdList.contains(userId) && memberIdList.contains(friendId)) {
+            ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
+            List<String> memberIdList = chatRoom.getMemberIdList();
+            if (!chatRoom.isGroupChatRoom() && memberIdList.contains(userId) && memberIdList.contains(friendId)) {
                 chatRoomService.deleteChatRoom(chatRoomId, userId);
                 break;
             }

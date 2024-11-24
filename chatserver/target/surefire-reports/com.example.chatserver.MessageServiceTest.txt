@@ -1,8 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.chatserver.MessageServiceTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.003 s <<< FAILURE! - in com.example.chatserver.MessageServiceTest
-testSaveMessage  Time elapsed: 0.003 s  <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "com.example.chatserver.controllers.MessageService.sendMessage(com.example.chatserver.models.Message)" because "this.messageService" is null
-	at com.example.chatserver.MessageServiceTest.testSaveMessage(MessageServiceTest.java:30)
-
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in com.example.chatserver.MessageServiceTest

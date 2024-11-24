@@ -1,0 +1,15 @@
+com\example\chatserver\repositories\MessageRepository.class
+com\example\chatserver\config\WebSocketConfig.class
+com\example\chatserver\services\MessageService.class
+com\example\chatserver\controllers\AuthController.class
+com\example\chatserver\models\User.class
+com\example\chatserver\services\ChatRoomService.class
+com\example\chatserver\models\ChatRoom.class
+com\example\chatserver\services\AuthService.class
+com\example\chatserver\ChatServerApplication.class
+com\example\chatserver\controllers\ChatRoomController.class
+com\example\chatserver\models\Message.class
+com\example\chatserver\repositories\ChatRoomRepository.class
+com\example\chatserver\utils\JwtUtil.class
+com\example\chatserver\controllers\MessageController.class
+com\example\chatserver\repositories\UserRepository.class

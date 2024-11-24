@@ -6,10 +6,16 @@ import java.util.Set;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@NoArgsConstructor                // For frameworks like Spring to create empty objects
+@RequiredArgsConstructor         // constructor with NonNull args
+@AllArgsConstructor              // Optional if you still want a constructor with all args
 @Document   // (collection = "User")  // Collection name in MongoDB
 public class User {
     @Id
@@ -22,27 +28,19 @@ public class User {
 
     // optional
     // private boolean disableNotification;
-    private Set<String> friendIdSet; // friend user id Set
-    private Set<String> chatRoomIdSet;
-    private Set<String> friendApplicationSenderIdSet;
+    private Set<String> friendIdSet = new HashSet<>(); // friend user id Set
+    private Set<String> chatRoomIdSet = new HashSet<>();
+    private Set<String> friendApplicationSenderIdSet = new HashSet<>();
     // user session setting in other model
 
-    public User(String userId, String username, String password, String publicKey, String profile) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.publicKey = publicKey;
-        this.profile = profile;
-        friendIdSet = new HashSet<>();
-        chatRoomIdSet = new HashSet<>();
-        friendApplicationSenderIdSet = new HashSet<>();
+    // return copy of set
+    public Set<String> getFriendIdSet() {
+        return new HashSet<>(friendIdSet);
     }
-
-    public User(String userId, String username, String password, String publicKey, String profile, 
-    Set<String> friendIdSet, Set<String> chatRoomIdSet, Set<String> friendApplicationSenderIdSet) {
-        this(userId, username, password, publicKey, profile);
-        this.friendIdSet = friendIdSet;
-        this.chatRoomIdSet = chatRoomIdSet;
-        this.friendApplicationSenderIdSet = friendApplicationSenderIdSet;
+    public Set<String> getChatRoomIdSet() {
+        return new HashSet<>(chatRoomIdSet);
+    }
+    public Set<String> getFriendApplicationSenderIdSet() {
+        return new HashSet<>(friendApplicationSenderIdSet);
     }
 }

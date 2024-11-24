@@ -1,4 +1,4 @@
-package com.example.chatserver.controllers;
+package com.example.chatserver.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.chatserver.models.ChatRoomRepository;
 import com.example.chatserver.models.Message;
-import com.example.chatserver.models.MessageRepository;
+import com.example.chatserver.repositories.ChatRoomRepository;
+import com.example.chatserver.repositories.MessageRepository;
 
 @Service
 public class MessageService {
@@ -24,11 +24,13 @@ public class MessageService {
     }
 
     @Transactional
-    public boolean sendMessage(Message message) {
+    public boolean saveMessage(Message message) {
         if (!chatRoomRepository.existsById(message.getChatRoomId()))
             return false;
+        List<String> memberList = chatRoomRepository.findByChatRoomId(message.getChatRoomId()).getMemberIdList();
+        if (!memberList.contains(message.getSenderId()))
+            return false;
         messageRepository.save(message);
-        // TODO: Logic to send a message to the chat room
         return true;
     }
 

@@ -1,4 +1,4 @@
-package com.example.chatserver.controllers;
+package com.example.chatserver.services;
 
 import java.util.List;
 import java.util.Set;
@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.chatserver.models.ChatRoom;
-import com.example.chatserver.models.ChatRoomRepository;
-import com.example.chatserver.models.MessageRepository;
 import com.example.chatserver.models.User;
-import com.example.chatserver.models.UserRepository;
+import com.example.chatserver.repositories.ChatRoomRepository;
+import com.example.chatserver.repositories.MessageRepository;
+import com.example.chatserver.repositories.UserRepository;
 
 @Service
 public class ChatRoomService {
@@ -24,18 +24,22 @@ public class ChatRoomService {
     @Autowired
     private UserRepository userRepository;
 
-    private void updateChatRoomIdSet(ChatRoom chatRoom, boolean isAdd) {
+    private void updateChatRoomIdSet(String chatRoomId, String userId, boolean isAdd) {
+        User user = userRepository.findByUserId(userId);
+        Set<String> chatRoomIdSet = user.getChatRoomIdSet();
+        if (isAdd)
+            chatRoomIdSet.add(chatRoomId);
+        else
+            chatRoomIdSet.remove(chatRoomId);
+        user.setChatRoomIdSet(chatRoomIdSet);
+        userRepository.save(user);
+    }
+
+    private void updateAllChatRoomIdSet(ChatRoom chatRoom, boolean isAdd) {
         List<String> memberIdList = chatRoom.getMemberIdList();
         String chatRoomId = chatRoom.getChatRoomId();
         for (String userId: memberIdList) {
-            User user = userRepository.findByUserId(userId);
-            Set<String> chatRoomIdSet = user.getChatRoomIdSet();
-            if (isAdd)
-                chatRoomIdSet.add(chatRoomId);
-            else
-                chatRoomIdSet.remove(chatRoomId);
-            user.setChatRoomIdSet(chatRoomIdSet);
-            userRepository.save(user);
+            updateChatRoomIdSet(chatRoomId, userId, isAdd);
         }
     }
 
@@ -43,20 +47,23 @@ public class ChatRoomService {
     public void createChatRoom(ChatRoom chatRoom) {
         chatRoomRepository.save(chatRoom);
         // add chat room id to related user
-        updateChatRoomIdSet(chatRoom, true);
+        updateAllChatRoomIdSet(chatRoom, true);
     }
 
     public ChatRoom getChatRoom(String chatRoomId) {
         return chatRoomRepository.findByChatRoomId(chatRoomId);
     }
 
+    @Transactional
     public void addChatRoomMember(String chatRoomId, String userId) {
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
         List<String> memberIdList = chatRoom.getMemberIdList();
-        if (!memberIdList.contains(userId))
+        if (chatRoom.isGroupChatRoom() && !memberIdList.contains(userId)) {
             memberIdList.add(userId);
-        chatRoom.setMemberIdList(memberIdList);
-        chatRoomRepository.save(chatRoom);
+            chatRoom.setMemberIdList(memberIdList);
+            chatRoomRepository.save(chatRoom);
+            updateChatRoomIdSet(chatRoomId, userId, true);
+        }
     }
 
     @Transactional
@@ -66,19 +73,22 @@ public class ChatRoomService {
             chatRoomRepository.deleteById(chatRoomId);
             messageRepository.deleteById(chatRoomId);
             // delete chat room id to related user
-            updateChatRoomIdSet(chatRoom, false);
+            updateAllChatRoomIdSet(chatRoom, false);
             return true;
         }
         else
             return false;
     }
 
+    @Transactional
     public boolean deleteChatRoomMember(String chatRoomId, String userId, String senderId) {
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
         List<String> memberIdList = chatRoom.getMemberIdList();
         if (chatRoom.isGroupChatRoom() && (userId.equals(senderId) || senderId.equals(memberIdList.get(0)))) {
             memberIdList.remove(userId);
             chatRoom.setMemberIdList(memberIdList);
+            chatRoomRepository.save(chatRoom);
+            updateChatRoomIdSet(chatRoomId, userId, false);
             return true;
         }
         else

@@ -5,6 +5,6 @@ D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-
 D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\AuthControllerTest.java
 D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\repositories\MessageRepositoryTest.java
 D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\services\MessageServiceTest.java
-D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\MessageControllerIntegrationTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\WebSocketIntegrationTest.java
 D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\services\ChatRoomServiceTest.java
 D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\repositories\ChatRoomRepositoryTest.java

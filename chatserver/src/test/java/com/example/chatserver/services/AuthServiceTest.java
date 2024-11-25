@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,6 +18,7 @@ import com.example.chatserver.models.ChatRoom;
 import com.example.chatserver.models.User;
 import com.example.chatserver.repositories.ChatRoomRepository;
 import com.example.chatserver.repositories.UserRepository;
+import com.example.chatserver.utils.RSAUtil;
 
 public class AuthServiceTest {
 
@@ -32,6 +34,13 @@ public class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
+    private String publicKey;
+
+    @BeforeEach
+    void setup() throws Exception {
+        publicKey = RSAUtil.publicKeyToString(RSAUtil.generateKeyPair().getPublic());
+    }
+
     @Test
     public void testCreateUser() {}
 
@@ -46,9 +55,9 @@ public class AuthServiceTest {
         String userId = "1", friendId = "2";
         Set<String> friendApplicationSenderIdSet1 = new HashSet<>(Set.of(friendId, "234"));
         Set<String> friendApplicationSenderIdSet2 = new HashSet<>(Set.of("45"));
-        User user = new User(userId, "name", "pswd", "public", "", 
+        User user = new User(userId, "name", "pswd", publicKey, "", 
                     new HashSet<>(), new HashSet<>(), friendApplicationSenderIdSet1);
-        User friend = new User(friendId, "frd", "pswd", "key", "",
+        User friend = new User(friendId, "frd", "pswd", publicKey, "",
                     new HashSet<>(), new HashSet<>(), friendApplicationSenderIdSet2);
         MockitoAnnotations.openMocks(this);
 
@@ -74,7 +83,7 @@ public class AuthServiceTest {
         String userId = "1", friendId = "2", chatRoomId1 = "98", chatRoomId2 = "58";
         Set<String> friendIdSet = new HashSet<>(Set.of("21", friendId));
         Set<String> chatRoomIdSet = new HashSet<>(Set.of(chatRoomId1, chatRoomId2));
-        User user = new User(userId, "name", "1233342", "23453425", "", friendIdSet, chatRoomIdSet, null);
+        User user = new User(userId, "name", "1233342", publicKey, "", friendIdSet, chatRoomIdSet, null);
         List<String> memberlList1 = List.of(userId, friendId), memberlList2 = List.of(userId, friendId, "21");
         ChatRoom chatRoom1 = new ChatRoom(chatRoomId1, false, memberlList1, "chatRoom1");
         ChatRoom chatRoom2 = new ChatRoom(chatRoomId2, true, memberlList2, "chatRoom2");

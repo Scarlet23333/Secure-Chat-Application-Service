@@ -48,7 +48,6 @@ public class AuthController {
     @PostMapping("/{userId}")
     public ResponseEntity<String> newFriendApplication(@PathVariable("userId") String userId, @RequestBody String friendId) {
         // Logic to send/save friend application or add friends
-        // "Friend application processed.""
         String response = authService.newFriendApplication(userId, friendId);
         if (response.equals("Invalid Friend ID."))
             return ResponseEntity.badRequest().body(response);

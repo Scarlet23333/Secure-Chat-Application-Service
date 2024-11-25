@@ -8,6 +8,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,6 +19,7 @@ import com.example.chatserver.models.User;
 import com.example.chatserver.repositories.ChatRoomRepository;
 import com.example.chatserver.repositories.MessageRepository;
 import com.example.chatserver.repositories.UserRepository;
+import com.example.chatserver.utils.RSAUtil;
 
 public class ChatRoomServiceTest {
     @InjectMocks
@@ -32,12 +34,19 @@ public class ChatRoomServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    private String publicKey;
+
+    @BeforeEach
+    void setup() throws Exception {
+        publicKey = RSAUtil.publicKeyToString(RSAUtil.generateKeyPair().getPublic());
+    }
+
     @Test
     public void testCreateChatRoom() {
         String chatRoomId = "1";
         ChatRoom chatRoom = new ChatRoom(chatRoomId, false, new ArrayList<>(List.of("123", "23")), "name");
-        User user1 = new User("123", "name1", "pawd", "", "");
-        User user2 = new User("23", "name2", "pawd", "", "");
+        User user1 = new User("123", "name1", "pawd", publicKey, "");
+        User user2 = new User("23", "name2", "pawd", publicKey, "");
         MockitoAnnotations.openMocks(this);
 
         when(userRepository.findByUserId("123")).thenReturn(user1);
@@ -59,7 +68,7 @@ public class ChatRoomServiceTest {
     public void testAddChatRoomMember() {
         String chatRoomId = "111", userId = "1";
         ChatRoom chatRoom = new ChatRoom(chatRoomId, true, new ArrayList<>(List.of("3", "2")), "room");
-        User user = new User("1", "name1", "pawd", "", "");
+        User user = new User("1", "name1", "pawd", publicKey, "");
         MockitoAnnotations.openMocks(this);
 
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
@@ -77,8 +86,8 @@ public class ChatRoomServiceTest {
     public void testDeleteChatRoom() {
         String chatRoomId = "1", senderId = "123";
         ChatRoom chatRoom = new ChatRoom(chatRoomId, true, new ArrayList<>(List.of("123", "23")), "name");
-        User user1 = new User("123", "name1", "pawd", "", "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
-        User user2 = new User("23", "name2", "pawd", "", "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
+        User user1 = new User("123", "name1", "pawd", publicKey, "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
+        User user2 = new User("23", "name2", "pawd", publicKey, "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
         MockitoAnnotations.openMocks(this);
 
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
@@ -100,7 +109,7 @@ public class ChatRoomServiceTest {
     public void testDeleteChatRoomMember() {
         String chatRoomId = "1", userId = "23", senderId = "123";
         ChatRoom chatRoom = new ChatRoom(chatRoomId, true, new ArrayList<>(List.of("123", "23")), "name");
-        User user = new User(userId, "name1", "pawd", "", "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
+        User user = new User(userId, "name1", "pawd", publicKey, "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
         MockitoAnnotations.openMocks(this);
 
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);

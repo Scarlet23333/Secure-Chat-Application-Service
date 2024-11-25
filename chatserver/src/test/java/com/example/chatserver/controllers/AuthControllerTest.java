@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.chatserver.models.User;
 import com.example.chatserver.services.AuthService;
+import com.example.chatserver.utils.RSAUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(AuthController.class)
@@ -42,10 +43,11 @@ public class AuthControllerTest {
     private User user1, user2;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception{
         // Setup sample data for testing
-        user1 = new User("1", "user1", "user1", "1", "");
-        user2 = new User("2", "user2", "user2", "2", "");
+        String publicKey = RSAUtil.publicKeyToString(RSAUtil.generateKeyPair().getPublic());
+        user1 = new User("1", "user1", "user1", publicKey, "");
+        user2 = new User("2", "user2", "user2", publicKey, "");
     }
 
     @Test

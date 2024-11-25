@@ -33,7 +33,6 @@ public class MessageController {
             return ResponseEntity.badRequest().body("Message send failed.");
         // send a message to the chat room
         messagingTemplate.convertAndSend("/topic/messages/" + chatRoomId, message);
-        System.out.println("Broadcast to: " + "/topic/messages/" + chatRoomId);
         return ResponseEntity.ok().header("X-Post-Message-chatRoomId", chatRoomId).body("Message sent.");
     }
 

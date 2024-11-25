@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
 import com.example.chatserver.models.User;
+import com.example.chatserver.utils.RSAUtil;
 
 @DataMongoTest
 public class UserRepositoryTest {
@@ -19,9 +20,10 @@ public class UserRepositoryTest {
     private String userId;
 
     @BeforeEach
-    void setup() {
-        userId = "123";
-        user = new User(userId, "username", "pswd", "key", "");
+    void setup() throws Exception {
+        String publicKey = RSAUtil.publicKeyToString(RSAUtil.generateKeyPair().getPublic());
+        userId = "12";
+        user = new User(userId, "username", "pswd", publicKey, "");
     }
 
     @Test

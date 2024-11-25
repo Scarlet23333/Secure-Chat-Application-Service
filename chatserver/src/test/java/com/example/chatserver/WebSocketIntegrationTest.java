@@ -17,7 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
+import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -44,29 +47,35 @@ public class WebSocketIntegrationTest {
 
     private WebSocketStompClient stompClient;
 
-    private String topicDestination;
-    private String chatRoomId;
+    private String topicDestination1, topicDestination2;
+    private String chatRoomId, userId, friendId;
     private Message testMessage;
     CompletableFuture<Message> receivedMessageFuture;
+    CompletableFuture<String> receivedFriendApplicationFuture;
 
     @BeforeEach
     public void setup() {
         chatRoomId = "123";
-        topicDestination = "/topic/messages/" + chatRoomId;
+        userId = "12";
+        friendId = "123";
+        topicDestination1 = "/topic/messages/" + chatRoomId;
+        topicDestination2 = "/topic/friend/" + friendId;
 
-        testMessage = new Message(chatRoomId, "user1", "Test message", TimeConvertUtil.localDateTimeToTimestamp(LocalDateTime.now()));
+        testMessage = new Message(chatRoomId, "user1", "Test message", 
+                                  TimeConvertUtil.localDateTimeToTimestamp(LocalDateTime.now()));
 
         stompClient = new WebSocketStompClient(new SockJsClient(
                 List.of(new WebSocketTransport(new StandardWebSocketClient()))));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+        List<MessageConverter> converters = List.of(new MappingJackson2MessageConverter(), new StringMessageConverter());
+        stompClient.setMessageConverter(new CompositeMessageConverter(converters));
     }
 
-    private class MyStompFrameHandler implements StompFrameHandler {
+    private class MessageStompFrameHandler implements StompFrameHandler {
 
         @Override
         public Type getPayloadType(StompHeaders stompHeaders) {
-            System.out.println("Headers: " + stompHeaders.toString());
-            System.out.println("Subscribed to topic: " + topicDestination);
+            System.out.println("Subscribed to topic: " + topicDestination1);
             return Message.class;
         }
     
@@ -77,10 +86,37 @@ public class WebSocketIntegrationTest {
         }
     }
 
-    private class MyStompSessionHandler extends StompSessionHandlerAdapter{
+    private class AuthStompFrameHandler implements StompFrameHandler {
+
+        @Override
+        public Type getPayloadType(StompHeaders stompHeaders) {
+            System.out.println("Subscribed to topic: " + topicDestination2);
+            return String.class;
+        }
+    
+        @Override
+        public void handleFrame(StompHeaders stompHeaders, Object payload) {
+            System.out.println("Received message: " + payload);
+            receivedFriendApplicationFuture.complete((String) payload);
+        }
+    }
+
+    private class MessageStompSessionHandler extends StompSessionHandlerAdapter{
         @Override
         public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-            session.subscribe(topicDestination, new MyStompFrameHandler());
+            session.subscribe(topicDestination1, new MessageStompFrameHandler());
+        }
+
+        @Override
+        public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
+            throw new RuntimeException("Failure in WebSocket Stomp Session Handling", exception);
+        }
+    }
+
+    private class AuthStompSessionHandler extends StompSessionHandlerAdapter{
+        @Override
+        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+            session.subscribe(topicDestination2, new AuthStompFrameHandler());
         }
 
         @Override
@@ -90,28 +126,48 @@ public class WebSocketIntegrationTest {
     }
 
     @Test
-    public void testRestApiAndWebSocketIntegration() throws Exception {
+    public void testSendMessageAndSubscribe() throws Exception {
         receivedMessageFuture = new CompletableFuture<>();
-
-        StompSessionHandler sessionHandler = new MyStompSessionHandler();
-
+        StompSessionHandler sessionHandler = new MessageStompSessionHandler();
         StompSession session = stompClient.connectAsync("ws://localhost:" + port + "/chat", sessionHandler)
                 .get(5, TimeUnit.SECONDS);
         assertTrue(session.isConnected());
-        System.out.println("session id: " + session.getSessionId());
 
         // Use RestTemplate to POST a message to the REST API
         String apiUrl = "http://localhost:" + port + "/api/messages/" + chatRoomId;
-
         ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, testMessage, String.class);
 
         // Assert that the REST API responded successfully
+        assertThat(response.getBody()).isEqualTo("Message sent.");
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 
-        // Verify that the WebSocket client receives the message
+        // Verify that the WebSocket client receives the friend application
         Message receivedMessage = receivedMessageFuture.get(5, TimeUnit.SECONDS);
 
         // Assert the received WebSocket message matches the sent message
         assertThat(receivedMessage).isEqualTo(testMessage);
+    }
+
+    @Test
+    public void testSendFriendApplicationAndSubscribe() throws Exception {
+        receivedFriendApplicationFuture = new CompletableFuture<>();
+        StompSessionHandler sessionHandler = new AuthStompSessionHandler();
+        StompSession session = stompClient.connectAsync("ws://localhost:" + port + "/chat", sessionHandler)
+                .get(5, TimeUnit.SECONDS);
+        assertTrue(session.isConnected());
+
+        // Use RestTemplate to POST a message to the REST API
+        String apiUrl = "http://localhost:" + port + "/api/auth/" + userId;
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, friendId, String.class);
+
+        // Assert that the REST API responded successfully
+        assertThat(response.getBody()).isEqualTo("Friend application sent.");
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+
+        // Verify that the WebSocket client receives the message
+        String receivedFriendApplication = receivedFriendApplicationFuture.get(5, TimeUnit.SECONDS);
+
+        // Assert the received WebSocket message matches the sent message
+        assertThat(receivedFriendApplication).isEqualTo(userId);
     }
 }

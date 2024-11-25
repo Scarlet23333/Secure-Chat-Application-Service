@@ -1,4 +1,12 @@
-com\example\chatserver\AuthServiceTest.class
-com\example\chatserver\MessageServiceTest.class
-com\example\chatserver\AuthControllerTest.class
-com\example\chatserver\ChatRoomServiceTest.class
+com\example\chatserver\controllers\AuthControllerTest.class
+com\example\chatserver\controllers\ChatRoomControllerTest.class
+com\example\chatserver\repositories\ChatRoomRepositoryTest.class
+com\example\chatserver\repositories\UserRepositoryTest.class
+com\example\chatserver\controllers\MessageControllerTest.class
+com\example\chatserver\controllers\MessageControllerIntegrationTest$MyStompFrameHandler.class
+com\example\chatserver\controllers\MessageControllerIntegrationTest$MyStompSessionHandler.class
+com\example\chatserver\services\AuthServiceTest.class
+com\example\chatserver\repositories\MessageRepositoryTest.class
+com\example\chatserver\controllers\MessageControllerIntegrationTest.class
+com\example\chatserver\services\ChatRoomServiceTest.class
+com\example\chatserver\services\MessageServiceTest.class

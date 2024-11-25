@@ -71,7 +71,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
         if (!chatRoom.isGroupChatRoom() || senderId.equals(chatRoom.getMemberIdList().get(0))) {
             chatRoomRepository.deleteById(chatRoomId);
-            messageRepository.deleteById(chatRoomId);
+            messageRepository.deleteByChatRoomId(chatRoomId);
             // delete chat room id to related user
             updateAllChatRoomIdSet(chatRoom, false);
             return true;

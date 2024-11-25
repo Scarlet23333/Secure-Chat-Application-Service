@@ -12,13 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.chatserver.models.Message;
 import com.example.chatserver.services.MessageService;
+import com.example.chatserver.utils.TimeConvertUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(MessageController.class)
@@ -27,10 +28,10 @@ public class MessageControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private MessageService messageService;
 
-    @MockBean
+    @MockitoBean
     private SimpMessagingTemplate messagingTemplate;
     
     @InjectMocks
@@ -46,8 +47,8 @@ public class MessageControllerTest {
     void setup() {
         // Setup sample data for testing
         chatRoomId = "123";
-        message1 = new Message(chatRoomId, "1", "hello", LocalDateTime.now());
-        message2 = new Message(chatRoomId, "2", "hi", LocalDateTime.now());
+        message1 = new Message(chatRoomId, "1", "hello", TimeConvertUtil.localDateTimeToTimestamp(LocalDateTime.now()));
+        message2 = new Message(chatRoomId, "2", "hi", TimeConvertUtil.localDateTimeToTimestamp(LocalDateTime.now()));
     }
 
     @Test

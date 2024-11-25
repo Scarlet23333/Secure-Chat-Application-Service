@@ -16,6 +16,7 @@ import com.example.chatserver.models.ChatRoom;
 import com.example.chatserver.models.Message;
 import com.example.chatserver.repositories.ChatRoomRepository;
 import com.example.chatserver.repositories.MessageRepository;
+import com.example.chatserver.utils.TimeConvertUtil;
 
 public class MessageServiceTest {
     @InjectMocks
@@ -33,7 +34,7 @@ public class MessageServiceTest {
     @Test
     public void testSaveMessage() {
         // Create a new message
-        Message message = new Message("1", "123", "hello", LocalDateTime.now());
+        Message message = new Message("1", "123", "hello", TimeConvertUtil.localDateTimeToTimestamp(LocalDateTime.now()));
         ChatRoom chatRoom = new ChatRoom("1", false, new ArrayList<>(List.of("123", "23")), "name");
         MockitoAnnotations.openMocks(this);
 

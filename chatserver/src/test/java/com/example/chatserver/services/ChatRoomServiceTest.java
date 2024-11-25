@@ -88,7 +88,7 @@ public class ChatRoomServiceTest {
         boolean deleted = chatRoomService.deleteChatRoom(chatRoomId, senderId);
 
         verify(chatRoomRepository).deleteById(chatRoomId);
-        verify(messageRepository).deleteById(chatRoomId);
+        verify(messageRepository).deleteByChatRoomId(chatRoomId);
         verify(userRepository).save(user1);
         verify(userRepository).save(user2);
         assertTrue(deleted);

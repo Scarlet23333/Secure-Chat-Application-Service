@@ -1,9 +1,9 @@
 package com.example.chatserver.services;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +20,8 @@ public class MessageService {
     private ChatRoomRepository chatRoomRepository;
 
     public List<Message> getMessages(String chatRoomId) {
-        return messageRepository.findByChatRoomId(chatRoomId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "timestamp");
+        return messageRepository.findByChatRoomId(chatRoomId, sort);
     }
 
     @Transactional
@@ -34,7 +35,7 @@ public class MessageService {
         return true;
     }
 
-    public void deleteMessage(String charRoomId, LocalDateTime timeStamp) {
-        messageRepository.deleteByChatRoomIdAndTimeStamp(charRoomId, timeStamp);
+    public void deleteMessage(String charRoomId, long timestamp) {
+        messageRepository.deleteByChatRoomIdAndTimestamp(charRoomId, timestamp);
     }
 }

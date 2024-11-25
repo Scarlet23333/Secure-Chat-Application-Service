@@ -1,4 +1,10 @@
-D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\AuthControllerTest.java
-D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\ChatRoomServiceTest.java
-D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\AuthServiceTest.java
-D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\MessageServiceTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\MessageControllerTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\services\AuthServiceTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\repositories\UserRepositoryTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\ChatRoomControllerTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\AuthControllerTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\repositories\MessageRepositoryTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\services\MessageServiceTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\controllers\MessageControllerIntegrationTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\services\ChatRoomServiceTest.java
+D:\codes\JAVA\5100_Application_Engineer_and_Development\Secure-Chat-Application-Service\chatserver\src\test\java\com\example\chatserver\repositories\ChatRoomRepositoryTest.java

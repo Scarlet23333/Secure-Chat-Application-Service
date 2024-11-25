@@ -8,7 +8,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import com.example.chatserver.models.Message;
 import com.example.chatserver.services.MessageService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -34,13 +33,14 @@ public class MessageController {
             return ResponseEntity.badRequest().body("Message send failed.");
         // send a message to the chat room
         messagingTemplate.convertAndSend("/topic/messages/" + chatRoomId, message);
+        System.out.println("Broadcast to: " + "/topic/messages/" + chatRoomId);
         return ResponseEntity.ok().header("X-Post-Message-chatRoomId", chatRoomId).body("Message sent.");
     }
 
     @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<String> deleteMessage(@PathVariable("chatRoomId") String chatRoomId, @RequestBody LocalDateTime timeStamp) {
+    public ResponseEntity<String> deleteMessage(@PathVariable("chatRoomId") String chatRoomId, @RequestBody long timestamp) {
         // Logic to delete user's own message
-        messageService.deleteMessage(chatRoomId, timeStamp);
+        messageService.deleteMessage(chatRoomId, timestamp);
         return ResponseEntity.ok().header("X-Delete-Message-chatRoomId", chatRoomId).body("Message deleted.");
     }
 }

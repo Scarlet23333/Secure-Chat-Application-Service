@@ -70,6 +70,11 @@ public class AuthService {
             friendApplicationSenderIdSet.remove(friendId);
             user.setFriendApplicationSenderIdSet(friendApplicationSenderIdSet);
             userRepository.save(user);
+            User friend = userRepository.findByUserId(friendId);
+            friendIdSet = friend.getFriendIdSet();
+            friendIdSet.add(userId);
+            friend.setFriendIdSet(friendIdSet);
+            userRepository.save(friend);
             return "Friend application accepted.";
         }
         else {

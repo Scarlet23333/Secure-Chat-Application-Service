@@ -76,6 +76,8 @@ public class AuthServiceTest {
         when(userRepository.findByUserId(friendId)).thenReturn(friend);
 
         String acceptedString = authService.newFriendApplication(userId, friendId);
+        verify(userRepository).save(friend);
+        
         String existString = authService.newFriendApplication(userId, friendId);
         user.setFriendIdSet(new HashSet<>());
         String sentString = authService.newFriendApplication(userId, friendId);
@@ -85,7 +87,6 @@ public class AuthServiceTest {
         assertEquals("Friend application sent.", sentString);
         assertTrue(friend.getFriendApplicationSenderIdSet().contains(userId));
         verify(userRepository).save(user);
-        verify(userRepository).save(friend);
     }
 
     @Test

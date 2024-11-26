@@ -31,15 +31,17 @@ public class MessageController {
         // Logic to send a message to the chat room
         if (!messageService.saveMessage(message))
             return ResponseEntity.badRequest().body("Message send failed.");
-        // send a message to the chat room
-        messagingTemplate.convertAndSend("/topic/messages/" + chatRoomId, message);
+        // send a message update notice to the chat room
+        messagingTemplate.convertAndSend("/topic/messages/" + chatRoomId, "message update");
         return ResponseEntity.ok().header("X-Post-Message-chatRoomId", chatRoomId).body("Message sent.");
     }
 
     @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<String> deleteMessage(@PathVariable("chatRoomId") String chatRoomId, @RequestBody long timestamp) {
+    public ResponseEntity<String> deleteMessage(@PathVariable("chatRoomId") String chatRoomId, @RequestParam("timestamp") long timestamp) {
         // Logic to delete user's own message
         messageService.deleteMessage(chatRoomId, timestamp);
+        // send a message update notice to the chat room
+        messagingTemplate.convertAndSend("/topic/messages/" + chatRoomId, "message update");
         return ResponseEntity.ok().header("X-Delete-Message-chatRoomId", chatRoomId).body("Message deleted.");
     }
 }

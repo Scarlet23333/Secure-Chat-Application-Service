@@ -47,7 +47,7 @@ public class UserRepositoryTest {
 
         // Assert
         assertThat(foundUser).isNotNull();
-        assertThat(foundUser.getUsername()).isEqualTo("username");
+        assertThat(foundUser.getPassword()).isEqualTo("pswd");
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.example.chatserver.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,16 @@ public class AuthService {
             return user;
         else
             return null;
+    }
+
+    public User getContact(String userId) {
+        if (!userRepository.existsById(userId)) return null;
+        User user = userRepository.findByUserId(userId);
+        user.setPassword("");
+        user.setFriendIdSet(new HashSet<>());
+        user.setChatRoomIdSet(new HashSet<>());
+        user.setFriendApplicationSenderIdSet(new HashSet<>());
+        return user;
     }
 
     public Set<String> getFriendApplications(String userId) {
@@ -93,11 +104,12 @@ public class AuthService {
         return user;
     }
 
-    public boolean changePassword(String userId, String password, String newPassword) {
+    public boolean changePassword(String userId, String password, String newPassword, String publicKey) {
         if (!userRepository.existsById(userId)) return false;
         User user = userRepository.findByUserId(userId);
         if (user.getPassword().equals(password)) {
             user.setPassword(newPassword);
+            user.setPublicKey(publicKey);
             userRepository.save(user);
             return true;
         }

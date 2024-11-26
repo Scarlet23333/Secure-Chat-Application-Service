@@ -17,9 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.converter.CompositeMessageConverter;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -50,8 +47,7 @@ public class WebSocketIntegrationTest {
     private String topicDestination1, topicDestination2;
     private String chatRoomId, userId, friendId;
     private Message testMessage;
-    CompletableFuture<Message> receivedMessageFuture;
-    CompletableFuture<String> receivedFriendApplicationFuture;
+    CompletableFuture<String> receivedMessageFuture, receivedFriendApplicationFuture;
 
     @BeforeEach
     public void setup() {
@@ -66,9 +62,7 @@ public class WebSocketIntegrationTest {
 
         stompClient = new WebSocketStompClient(new SockJsClient(
                 List.of(new WebSocketTransport(new StandardWebSocketClient()))));
-
-        List<MessageConverter> converters = List.of(new MappingJackson2MessageConverter(), new StringMessageConverter());
-        stompClient.setMessageConverter(new CompositeMessageConverter(converters));
+        stompClient.setMessageConverter(new StringMessageConverter());
     }
 
     private class MessageStompFrameHandler implements StompFrameHandler {
@@ -76,13 +70,13 @@ public class WebSocketIntegrationTest {
         @Override
         public Type getPayloadType(StompHeaders stompHeaders) {
             System.out.println("Subscribed to topic: " + topicDestination1);
-            return Message.class;
+            return String.class;
         }
     
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object payload) {
             System.out.println("Received message: " + payload);
-            receivedMessageFuture.complete((Message) payload);
+            receivedMessageFuture.complete((String) payload);
         }
     }
 
@@ -142,10 +136,10 @@ public class WebSocketIntegrationTest {
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 
         // Verify that the WebSocket client receives the friend application
-        Message receivedMessage = receivedMessageFuture.get(5, TimeUnit.SECONDS);
+        String receivedMessage = receivedMessageFuture.get(5, TimeUnit.SECONDS);
 
         // Assert the received WebSocket message matches the sent message
-        assertThat(receivedMessage).isEqualTo(testMessage);
+        assertThat(receivedMessage).isEqualTo("message update");
     }
 
     @Test

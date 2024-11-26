@@ -86,8 +86,8 @@ public class ChatRoomControllerTest {
         String senderId = "1";
         when(chatRoomService.deleteChatRoom(chatRoomId, senderId)).thenReturn(true);
         mockMvc.perform(delete("/api/chatrooms/{chatRoomId}", chatRoomId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(senderId))
+                .param("senderId", senderId)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Delete-ChatRoom-ChatRoomId", chatRoomId))
                 .andExpect(content().string("Chat room deleted."));
@@ -96,8 +96,8 @@ public class ChatRoomControllerTest {
 
         when(chatRoomService.deleteChatRoom(chatRoomId, senderId)).thenReturn(false);
         mockMvc.perform(delete("/api/chatrooms/{chatRoomId}", chatRoomId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(senderId))
+                .param("senderId", senderId)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Insufficient permission to delete group chat room."));
     }
@@ -107,8 +107,8 @@ public class ChatRoomControllerTest {
         String userId = "56", senderId = "1";
         when(chatRoomService.deleteChatRoomMember(chatRoomId, userId, senderId)).thenReturn(true);
         mockMvc.perform(delete("/api/chatrooms/{chatRoomId}/{userId}", chatRoomId, userId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(senderId))
+                .param("senderId", senderId)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Delete-ChatRoomMember-UserId", userId))
                 .andExpect(content().string("Chat room member removed."));
@@ -117,8 +117,8 @@ public class ChatRoomControllerTest {
 
         when(chatRoomService.deleteChatRoomMember(chatRoomId, userId, senderId)).thenReturn(false);
         mockMvc.perform(delete("/api/chatrooms/{chatRoomId}/{userId}", chatRoomId, userId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(senderId))
+                .param("senderId", senderId)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Insufficient permission to remove chat room member."));
     }

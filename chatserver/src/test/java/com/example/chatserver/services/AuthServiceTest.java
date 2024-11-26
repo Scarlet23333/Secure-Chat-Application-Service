@@ -45,7 +45,17 @@ public class AuthServiceTest {
     public void testCreateUser() {}
 
     @Test
-    public void testLogin() {}
+    public void testLogin() {
+        String userId = "1";
+        User user = new User(userId, "name", "pswd", publicKey, "");
+        MockitoAnnotations.openMocks(this);
+
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.findByUserId(userId)).thenReturn(user);
+        User userFound = authService.login(userId, user.getPassword());
+        
+        assertEquals(user, userFound);
+    }
 
     @Test
     public void testGetFriendApplications() {}

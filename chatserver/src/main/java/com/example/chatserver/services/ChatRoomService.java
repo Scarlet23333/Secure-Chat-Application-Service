@@ -25,14 +25,16 @@ public class ChatRoomService {
     private UserRepository userRepository;
 
     private void updateChatRoomIdSet(String chatRoomId, String userId, boolean isAdd) {
-        User user = userRepository.findByUserId(userId);
-        Set<String> chatRoomIdSet = user.getChatRoomIdSet();
-        if (isAdd)
-            chatRoomIdSet.add(chatRoomId);
-        else
-            chatRoomIdSet.remove(chatRoomId);
-        user.setChatRoomIdSet(chatRoomIdSet);
-        userRepository.save(user);
+        if (userRepository.existsById(userId)) {
+            User user = userRepository.findByUserId(userId);
+            Set<String> chatRoomIdSet = user.getChatRoomIdSet();
+            if (isAdd)
+                chatRoomIdSet.add(chatRoomId);
+            else
+                chatRoomIdSet.remove(chatRoomId);
+            user.setChatRoomIdSet(chatRoomIdSet);
+            userRepository.save(user);
+        }
     }
 
     private void updateAllChatRoomIdSet(ChatRoom chatRoom, boolean isAdd) {

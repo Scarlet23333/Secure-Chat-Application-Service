@@ -29,12 +29,22 @@ public class AuthController {
             return ResponseEntity.badRequest().body("User id existed.");
     }
 
-    @GetMapping("/login/{userId}")
+    @PostMapping("/login/{userId}")
     public ResponseEntity<User> login(@PathVariable("userId") String userId, @RequestBody String password) {
         // Logic to authenticate user // and return JWT
         User user = authService.login(userId, password);
         if (user != null)
             return ResponseEntity.ok().header("X-Get-User-Login-UserId", userId).body(user);
+        else
+            return ResponseEntity.badRequest().body(new User());
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<User> getContact(@PathVariable("userId") String userId) {
+        // Logic to get contact user info
+        User user = authService.getContact(userId);
+        if (user != null) 
+            return ResponseEntity.ok().header("X-Get-User-Contact-UserId", userId).body(user);
         else
             return ResponseEntity.badRequest().body(new User());
     }
@@ -70,9 +80,10 @@ public class AuthController {
     }
 
     @PutMapping("/password/{userId}")
-    public ResponseEntity<String> changePassword(@PathVariable("userId") String userId, @RequestParam("password") String password, @RequestBody String newPassword) {
+    public ResponseEntity<String> changePassword(@PathVariable("userId") String userId, @RequestParam("password") String password, 
+                                                @RequestParam("newPassword") String newPassword, @RequestBody String publicKey) {
         // Logic to change the password
-        if (authService.changePassword(userId, password, newPassword))
+        if (authService.changePassword(userId, password, newPassword, publicKey))
             return ResponseEntity.ok().header("X-Put-Password-UserId", userId).body("Password changed.");
         else
             return ResponseEntity.badRequest().body("Password change failed.");

@@ -51,6 +51,8 @@ public class ChatRoomServiceTest {
 
         when(userRepository.findByUserId("123")).thenReturn(user1);
         when(userRepository.findByUserId("23")).thenReturn(user2);
+        when(userRepository.existsById("123")).thenReturn(true);
+        when(userRepository.existsById("23")).thenReturn(true);
 
         chatRoomService.createChatRoom(chatRoom);
 
@@ -73,6 +75,7 @@ public class ChatRoomServiceTest {
 
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
         when(userRepository.findByUserId(userId)).thenReturn(user);
+        when(userRepository.existsById(userId)).thenReturn(true);
 
         chatRoomService.addChatRoomMember(chatRoomId, userId);
 
@@ -93,6 +96,8 @@ public class ChatRoomServiceTest {
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
         when(userRepository.findByUserId("123")).thenReturn(user1);
         when(userRepository.findByUserId("23")).thenReturn(user2);
+        when(userRepository.existsById("123")).thenReturn(true);
+        when(userRepository.existsById("23")).thenReturn(true);
 
         boolean deleted = chatRoomService.deleteChatRoom(chatRoomId, senderId);
 
@@ -114,6 +119,7 @@ public class ChatRoomServiceTest {
 
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
         when(userRepository.findByUserId(userId)).thenReturn(user);
+        when(userRepository.existsById(userId)).thenReturn(true);
 
         boolean deleted = chatRoomService.deleteChatRoomMember(chatRoomId, userId, senderId);
 

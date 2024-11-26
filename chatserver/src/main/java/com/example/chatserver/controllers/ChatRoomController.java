@@ -35,7 +35,7 @@ public class ChatRoomController {
     }
 
     @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") String chatRoomId, @RequestBody String senderId) {
+    public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") String chatRoomId, @RequestParam("senderId") String senderId) {
         // Logic to delete a group chat room
         if (chatRoomService.deleteChatRoom(chatRoomId, senderId))
             return ResponseEntity.ok().header("X-Delete-ChatRoom-ChatRoomId", chatRoomId).body("Chat room deleted.");
@@ -44,7 +44,7 @@ public class ChatRoomController {
     }
 
     @DeleteMapping("/{chatRoomId}/{userId}")
-    public ResponseEntity<String> deleteChatRoomMember(@PathVariable("chatRoomId") String chatRoomId, @PathVariable("userId") String userId, @RequestBody String senderId) {
+    public ResponseEntity<String> deleteChatRoomMember(@PathVariable("chatRoomId") String chatRoomId, @PathVariable("userId") String userId, @RequestParam("senderId") String senderId) {
         // Logic to remove a specific member from a group chat room
         if (chatRoomService.deleteChatRoomMember(chatRoomId, userId, senderId))
             return ResponseEntity.ok().header("X-Delete-ChatRoomMember-UserId", userId).body("Chat room member removed.");

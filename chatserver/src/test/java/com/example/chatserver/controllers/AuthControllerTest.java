@@ -79,7 +79,7 @@ public class AuthControllerTest {
         String userId = user1.getUserId(), password = user1.getPassword();
         when(authService.login(userId, password)).thenReturn(user1);
 
-        mockMvc.perform(get("/api/auth/login/{userId}", userId)
+        mockMvc.perform(post("/api/auth/login/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(password))
                 .andExpect(status().isOk())
@@ -90,7 +90,7 @@ public class AuthControllerTest {
 
         when(authService.login(userId, password)).thenReturn(null);
 
-        mockMvc.perform(get("/api/auth/login/{userId}", userId)
+        mockMvc.perform(post("/api/auth/login/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(password))
                 .andExpect(status().isBadRequest())
@@ -145,18 +145,19 @@ public class AuthControllerTest {
 
     @Test
     public void testChangePassword() throws Exception {
-        String userId = user1.getUserId(), password = user1.getPassword(), newPassword = "23524234";
+        String userId = user1.getUserId(), password = user1.getPassword(), newPassword = "23524234", publicKey = "534253452345";
 
-        when(authService.changePassword(userId, password, newPassword)).thenReturn(true);
+        when(authService.changePassword(userId, password, newPassword, publicKey)).thenReturn(true);
         mockMvc.perform(put("/api/auth/password/{userId}", userId)
                 .param("password", password)
+                .param("newPassword", newPassword)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(newPassword))
+                .content(publicKey))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Put-Password-UserId", userId))
                 .andExpect(content().string("Password changed."));
         
-        verify(authService).changePassword(userId, password, newPassword);
+        verify(authService).changePassword(userId, password, newPassword, publicKey);
     }
 
     @Test

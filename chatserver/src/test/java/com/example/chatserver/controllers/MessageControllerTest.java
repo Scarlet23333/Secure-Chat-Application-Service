@@ -74,7 +74,7 @@ public class MessageControllerTest {
                 .andExpect(header().string("X-Post-Message-chatRoomId", chatRoomId))
                 .andExpect(content().string("Message sent."));
 
-        verify(messagingTemplate).convertAndSend("/topic/messages/" + chatRoomId, message1);
+        verify(messagingTemplate).convertAndSend("/topic/messages/" + chatRoomId, "message update");
         
         when(messageService.saveMessage(message1)).thenReturn(false);
         mockMvc.perform(post("/api/messages/{chatRoomId}", chatRoomId)
@@ -87,12 +87,13 @@ public class MessageControllerTest {
     @Test
     public void testDeleteMessage() throws Exception {
         mockMvc.perform(delete("/api/messages/{chatRoomId}", chatRoomId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(message1.getTimestamp())))
+                .param("timestamp", objectMapper.writeValueAsString(message1.getTimestamp()))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Delete-Message-chatRoomId", chatRoomId))
                 .andExpect(content().string("Message deleted."));
 
         verify(messageService).deleteMessage(chatRoomId, message1.getTimestamp());
+        verify(messagingTemplate).convertAndSend("/topic/messages/" + chatRoomId, "message update");
     }
 }

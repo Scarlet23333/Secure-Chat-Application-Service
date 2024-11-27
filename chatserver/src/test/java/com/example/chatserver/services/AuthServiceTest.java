@@ -77,7 +77,7 @@ public class AuthServiceTest {
 
         String acceptedString = authService.newFriendApplication(userId, friendId);
         verify(userRepository).save(friend);
-        
+
         String existString = authService.newFriendApplication(userId, friendId);
         user.setFriendIdSet(new HashSet<>());
         String sentString = authService.newFriendApplication(userId, friendId);
@@ -92,9 +92,10 @@ public class AuthServiceTest {
     @Test
     public void testDeleteFriend() {
         String userId = "1", friendId = "2", chatRoomId1 = "98", chatRoomId2 = "58";
-        Set<String> friendIdSet = new HashSet<>(Set.of("21", friendId));
+        Set<String> friendIdSet1 = new HashSet<>(Set.of("21", friendId)), friendIdSet2 = new HashSet<>(Set.of(userId));
         Set<String> chatRoomIdSet = new HashSet<>(Set.of(chatRoomId1, chatRoomId2));
-        User user = new User(userId, "name", "1233342", publicKey, "", friendIdSet, chatRoomIdSet, null);
+        User user = new User(userId, "name", "1233342", publicKey, "", friendIdSet1, chatRoomIdSet, null);
+        User friend = new User(friendId, "name", "1233342", publicKey, "", friendIdSet2, chatRoomIdSet, null);
         List<String> memberlList1 = List.of(userId, friendId), memberlList2 = List.of(userId, friendId, "21");
         ChatRoom chatRoom1 = new ChatRoom(chatRoomId1, false, memberlList1, "chatRoom1");
         ChatRoom chatRoom2 = new ChatRoom(chatRoomId2, true, memberlList2, "chatRoom2");
@@ -102,15 +103,22 @@ public class AuthServiceTest {
         MockitoAnnotations.openMocks(this);
 
         when(userRepository.findByUserId(userId)).thenReturn(user);
-        when(chatRoomRepository.findByChatRoomId("98")).thenReturn(chatRoom1);
-        when(chatRoomRepository.findByChatRoomId("58")).thenReturn(chatRoom2);
-        
-        User modifiedUser = authService.deleteFriend(userId, friendId);
+        when(userRepository.findByUserId(friendId)).thenReturn(friend);
+        when((userRepository.existsById(friendId))).thenReturn(true);
+        when(chatRoomRepository.findByChatRoomId(chatRoomId1)).thenReturn(chatRoom1);
+        when(chatRoomRepository.findByChatRoomId(chatRoomId2)).thenReturn(chatRoom2);
+        when(chatRoomRepository.existsById(chatRoomId1)).thenReturn(true);
+        when(chatRoomRepository.existsById(chatRoomId2)).thenReturn(true);
+
+        authService.deleteFriend(userId, friendId);
 
         // Assert the the friend is deleted
-        assertEquals(user, modifiedUser);
+        assertEquals(Set.of("21"), user.getFriendIdSet());
+        assertEquals(new HashSet<>(), friend.getFriendIdSet());
         verify(userRepository).save(user);
+        verify(userRepository).save(friend);
         verify(chatRoomService).deleteChatRoom(chatRoomId1, userId);
+        verify(chatRoomService, never()).deleteChatRoom(chatRoomId2, userId);
     }
 
     @Test

@@ -29,4 +29,8 @@ public class ChatRoom {
     public List<String> getMemberIdList() {
         return new ArrayList<>(memberIdList);
     }
+
+    public void setMemberIdList(List<String> memberIdlist) {
+        this.memberIdList = new ArrayList<>(memberIdlist);
+    }
 }

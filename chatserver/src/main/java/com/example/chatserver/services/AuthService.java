@@ -90,23 +90,31 @@ public class AuthService {
     }
 
     @Transactional
-    public User deleteFriend(String userId, String friendId) {
+    public void deleteFriend(String userId, String friendId) {
         User user = userRepository.findByUserId(userId);
         Set<String> friendIdSet = user.getFriendIdSet();
         friendIdSet.remove(friendId);
         user.setFriendIdSet(friendIdSet);
         userRepository.save(user);
+        if (userRepository.existsById(friendId)) {
+            User friend = userRepository.findByUserId(friendId);
+            friendIdSet = friend.getFriendIdSet();
+            friendIdSet.remove(userId);
+            friend.setFriendIdSet(friendIdSet);
+            userRepository.save(friend);
+        }
         // delete related chatroom
         Set<String> chatRoomIdSet = user.getChatRoomIdSet();
         for (String chatRoomId: chatRoomIdSet) {
-            ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
-            List<String> memberIdList = chatRoom.getMemberIdList();
-            if (!chatRoom.isGroupChatRoom() && memberIdList.contains(userId) && memberIdList.contains(friendId)) {
-                chatRoomService.deleteChatRoom(chatRoomId, userId);
-                break;
+            if (chatRoomRepository.existsById(chatRoomId)) {
+                ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
+                List<String> memberIdList = chatRoom.getMemberIdList();
+                if (!chatRoom.isGroupChatRoom() && memberIdList.contains(userId) && memberIdList.contains(friendId)) {
+                    chatRoomService.deleteChatRoom(chatRoomId, userId);
+                    break;
+                }
             }
         }
-        return user;
     }
 
     public boolean changePassword(String userId, String password, String newPassword, String publicKey) {

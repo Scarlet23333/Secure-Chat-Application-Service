@@ -72,6 +72,13 @@ public class AuthController {
         }
     }
 
+    @DeleteMapping("/application/{userId}/{friendId}")
+    public ResponseEntity<String> rejectFriendApplication(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) {
+        // logic to reject friend application from friendId to userId
+        authService.deleteFriendApplication(userId, friendId);
+        return ResponseEntity.ok().header("X-DELETE-Application-FriendId", friendId).body("Friend application rejected.");
+    }
+
     @DeleteMapping("/{userId}/{friendId}")
     public ResponseEntity<String> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) {
         // Logic to delete a friend and related one-on-one chat rooms

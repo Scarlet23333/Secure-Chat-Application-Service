@@ -89,6 +89,14 @@ public class AuthService {
         }
     }
 
+    public void deleteFriendApplication(String userId, String friendId) {
+        User user = userRepository.findByUserId(userId);
+        Set<String> friendApplicationSenderIdSet = user.getFriendApplicationSenderIdSet();
+        friendApplicationSenderIdSet.remove(friendId);
+        user.setFriendApplicationSenderIdSet(friendApplicationSenderIdSet);
+        userRepository.save(user);
+    }
+
     @Transactional
     public void deleteFriend(String userId, String friendId) {
         User user = userRepository.findByUserId(userId);

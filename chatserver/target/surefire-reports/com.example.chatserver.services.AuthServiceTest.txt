@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.chatserver.services.AuthServiceTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.346 s -- in com.example.chatserver.services.AuthServiceTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.356 s -- in com.example.chatserver.services.AuthServiceTest

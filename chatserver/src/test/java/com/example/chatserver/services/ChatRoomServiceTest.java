@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import com.example.chatserver.models.ChatRoom;
 import com.example.chatserver.models.User;
@@ -33,6 +34,9 @@ public class ChatRoomServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     private String publicKey;
 
@@ -59,6 +63,8 @@ public class ChatRoomServiceTest {
         verify(chatRoomRepository).save(chatRoom);
         verify(userRepository).save(user1);
         verify(userRepository).save(user2);
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + "123", "Chat room updated.");
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + "23", "Chat room updated.");
         assertTrue(user1.getChatRoomIdSet().contains(chatRoomId));
         assertTrue(user2.getChatRoomIdSet().contains(chatRoomId));
     }
@@ -81,6 +87,7 @@ public class ChatRoomServiceTest {
 
         verify(chatRoomRepository).save(chatRoom);
         verify(userRepository).save(user);
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + userId, "Chat room updated.");
         assertTrue(chatRoom.getMemberIdList().contains(userId));
         assertTrue(user.getChatRoomIdSet().contains(chatRoomId));
     }
@@ -105,6 +112,8 @@ public class ChatRoomServiceTest {
         verify(messageRepository).deleteByChatRoomId(chatRoomId);
         verify(userRepository).save(user1);
         verify(userRepository).save(user2);
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + "123", "Chat room updated.");
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + "23", "Chat room updated.");
         assertTrue(deleted);
         assertTrue(user1.getChatRoomIdSet().isEmpty());
         assertTrue(user2.getChatRoomIdSet().isEmpty());
@@ -125,6 +134,7 @@ public class ChatRoomServiceTest {
 
         verify(chatRoomRepository).save(chatRoom);
         verify(userRepository).save(user);
+        verify(messagingTemplate).convertAndSend("/topic/chatroom/" + userId, "Chat room updated.");
         assertTrue(deleted);
         assertTrue(!chatRoom.getMemberIdList().contains(userId));
         assertTrue(user.getChatRoomIdSet().isEmpty());

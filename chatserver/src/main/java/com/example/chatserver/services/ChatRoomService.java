@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,9 @@ public class ChatRoomService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     private void updateChatRoomIdSet(String chatRoomId, String userId, boolean isAdd) {
         if (userRepository.existsById(userId)) {
             User user = userRepository.findByUserId(userId);
@@ -34,6 +38,7 @@ public class ChatRoomService {
                 chatRoomIdSet.remove(chatRoomId);
             user.setChatRoomIdSet(chatRoomIdSet);
             userRepository.save(user);
+            messagingTemplate.convertAndSend("/topic/chatroom/" + userId, "Chat room updated.");
         }
     }
 

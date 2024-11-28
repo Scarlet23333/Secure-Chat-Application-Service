@@ -25,7 +25,7 @@ public class AuthService {
     private ChatRoomService chatRoomService;
 
     public boolean createUser(User user) {
-        if (userRepository.existsById(user.getUserId())) {
+        if (!userRepository.existsById(user.getUserId())) {
             userRepository.save(user);
             return true;
         }

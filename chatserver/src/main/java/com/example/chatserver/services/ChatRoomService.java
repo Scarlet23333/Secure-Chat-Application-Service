@@ -80,7 +80,7 @@ public class ChatRoomService {
     public boolean deleteChatRoom(String chatRoomId, String senderId) {
         if (!chatRoomRepository.existsById(chatRoomId)) return false;
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
-        if (!chatRoom.isGroupChatRoom() || senderId.equals(chatRoom.getMemberIdList().get(0))) {
+        if (!chatRoom.isGroupChatRoom() || chatRoom.getMemberIdList().isEmpty() || senderId.equals(chatRoom.getMemberIdList().get(0))) {
             chatRoomRepository.deleteById(chatRoomId);
             messageRepository.deleteByChatRoomId(chatRoomId);
             // delete chat room id to related user
@@ -100,6 +100,8 @@ public class ChatRoomService {
             chatRoom.setMemberIdList(memberIdList);
             chatRoomRepository.save(chatRoom);
             updateChatRoomIdSet(chatRoomId, userId, false);
+            if (chatRoom.getMemberIdList().isEmpty())
+                deleteChatRoom(chatRoomId, senderId);
             return true;
         }
         else

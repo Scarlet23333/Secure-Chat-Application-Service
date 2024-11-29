@@ -17,8 +17,7 @@ public class ChatRoomController {
     @PostMapping
     public ResponseEntity<String> postChatRoom(@RequestBody ChatRoom chatRoom) {
         // Logic to create or update a chat room
-        chatRoomService.createChatRoom(chatRoom);
-        return ResponseEntity.ok().header("X-Post-ChatRoom-ChatRoomId", chatRoom.getChatRoomId()).body("Chat room created.");
+        return ResponseEntity.ok().header("X-Post-ChatRoom-ChatRoomId", chatRoom.getChatRoomId()).body(chatRoomService.createChatRoom(chatRoom));
     }
 
     @GetMapping("/{chatRoomId}")

@@ -51,10 +51,11 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void createChatRoom(ChatRoom chatRoom) {
-        chatRoomRepository.save(chatRoom);
+    public String createChatRoom(ChatRoom chatRoom) {
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         // add chat room id to related user
-        updateAllChatRoomIdSet(chatRoom, true);
+        updateAllChatRoomIdSet(savedChatRoom, true);
+        return savedChatRoom.getChatRoomId();
     }
 
     public ChatRoom getChatRoom(String chatRoomId) {
@@ -63,18 +64,21 @@ public class ChatRoomService {
 
     @Transactional
     public void addChatRoomMember(String chatRoomId, String userId) {
-        ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
-        List<String> memberIdList = chatRoom.getMemberIdList();
-        if (chatRoom.isGroupChatRoom() && !memberIdList.contains(userId)) {
-            memberIdList.add(userId);
-            chatRoom.setMemberIdList(memberIdList);
-            chatRoomRepository.save(chatRoom);
-            updateChatRoomIdSet(chatRoomId, userId, true);
+        if (chatRoomRepository.existsById(chatRoomId)) {
+            ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
+            List<String> memberIdList = chatRoom.getMemberIdList();
+            if (chatRoom.isGroupChatRoom() && !memberIdList.contains(userId)) {
+                memberIdList.add(userId);
+                chatRoom.setMemberIdList(memberIdList);
+                chatRoomRepository.save(chatRoom);
+                updateChatRoomIdSet(chatRoomId, userId, true);
+            }
         }
     }
 
     @Transactional
     public boolean deleteChatRoom(String chatRoomId, String senderId) {
+        if (!chatRoomRepository.existsById(chatRoomId)) return false;
         ChatRoom chatRoom = chatRoomRepository.findByChatRoomId(chatRoomId);
         if (!chatRoom.isGroupChatRoom() || senderId.equals(chatRoom.getMemberIdList().get(0))) {
             chatRoomRepository.deleteById(chatRoomId);

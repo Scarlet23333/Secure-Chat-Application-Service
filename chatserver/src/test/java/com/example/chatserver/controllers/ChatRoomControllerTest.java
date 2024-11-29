@@ -40,18 +40,20 @@ public class ChatRoomControllerTest {
     @BeforeEach
     void setup() {
         // Setup sample data for testing
-        chatRoom = new ChatRoom("23", false, new ArrayList<>(), "one");
+        chatRoomId = "23";
+        chatRoom = new ChatRoom(chatRoomId, false, new ArrayList<>(), "one");
         chatRoomId = chatRoom.getChatRoomId();
     }
 
     @Test
     public void testPostChatRoom() throws Exception {
+        when(chatRoomService.createChatRoom(chatRoom)).thenReturn(chatRoomId);
         mockMvc.perform(post("/api/chatrooms")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(chatRoom)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Post-ChatRoom-ChatRoomId", chatRoomId))
-                .andExpect(content().string("Chat room created."));
+                .andExpect(content().string(chatRoomId));
         
         verify(chatRoomService).createChatRoom(chatRoom);
     }

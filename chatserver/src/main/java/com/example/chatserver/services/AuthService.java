@@ -137,8 +137,8 @@ public class AuthService {
         return false;
     }
 
-    public void updateUserSettings(String userId, boolean disableNotification) {
-        // TODO: Logic to update user settings
+    public void updateUser(String userId, User user) {
+        userRepository.save(user);
     }
 
     public String getPublicKey(String userId) {

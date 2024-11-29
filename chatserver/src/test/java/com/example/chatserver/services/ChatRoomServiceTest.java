@@ -57,6 +57,7 @@ public class ChatRoomServiceTest {
         when(userRepository.findByUserId("23")).thenReturn(user2);
         when(userRepository.existsById("123")).thenReturn(true);
         when(userRepository.existsById("23")).thenReturn(true);
+        when(chatRoomRepository.save(chatRoom)).thenReturn(chatRoom);
 
         chatRoomService.createChatRoom(chatRoom);
 
@@ -79,6 +80,7 @@ public class ChatRoomServiceTest {
         User user = new User("1", "name1", "pawd", publicKey, "");
         MockitoAnnotations.openMocks(this);
 
+        when(chatRoomRepository.existsById(chatRoomId)).thenReturn(true);
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
         when(userRepository.findByUserId(userId)).thenReturn(user);
         when(userRepository.existsById(userId)).thenReturn(true);
@@ -100,6 +102,7 @@ public class ChatRoomServiceTest {
         User user2 = new User("23", "name2", "pawd", publicKey, "", new HashSet<>(), new HashSet<>(Set.of(chatRoomId)), new HashSet<>());
         MockitoAnnotations.openMocks(this);
 
+        when(chatRoomRepository.existsById(chatRoomId)).thenReturn(true);
         when(chatRoomRepository.findByChatRoomId(chatRoomId)).thenReturn(chatRoom);
         when(userRepository.findByUserId("123")).thenReturn(user1);
         when(userRepository.findByUserId("23")).thenReturn(user2);

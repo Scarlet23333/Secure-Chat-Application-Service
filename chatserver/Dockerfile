@@ -3,7 +3,7 @@ FROM openjdk:20-jdk
 
 VOLUME /tmp
 
-ARG JAR_FILE=target/chatserver-1.1.0.jar
+ARG JAR_FILE=target/chatserver-1.1.2.jar
 
 COPY ${JAR_FILE} chatserver.jar
 

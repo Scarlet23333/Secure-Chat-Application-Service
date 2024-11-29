@@ -61,8 +61,10 @@ public class AuthController {
         String response = authService.newFriendApplication(userId, friendId);
         if (response.equals("Invalid Friend ID."))
             return ResponseEntity.badRequest().body(response);
-        else if (response.equals("Friend application accepted."))
+        else if (response.equals("Friend application accepted.")) {
+            messagingTemplate.convertAndSend("/topic/friend/" + friendId, "Friend list update");
             return ResponseEntity.ok().header("X-Post-Friend-FriendId", friendId).body(response);
+        }
         else if (response.equals("Friend already exists."))
             return ResponseEntity.badRequest().body(response);
         else {
@@ -83,6 +85,7 @@ public class AuthController {
     public ResponseEntity<String> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) {
         // Logic to delete a friend and related one-on-one chat rooms
         authService.deleteFriend(userId, friendId);
+        messagingTemplate.convertAndSend("/topic/friend/" + friendId, "Friend list update");
         return ResponseEntity.ok().header("X-Delete-Friend-FriendId", friendId).body("Friend delete successful.");
     }
 
@@ -97,9 +100,9 @@ public class AuthController {
     }
 
     @PutMapping("/user/{userId}")
-    public ResponseEntity<String> updateUserSettings(@PathVariable("userId") String userId, @RequestBody boolean disableNotification) {
-        // TODO: Logic to update user settings
-        return ResponseEntity.ok(new String());
+    public ResponseEntity<String> updateUser(@PathVariable("userId") String userId, @RequestBody User user) {
+        authService.updateUser(userId, user);
+        return ResponseEntity.ok().header("X-Put-User", userId).body("User updated.");
     }
 
     @GetMapping("/publickey/{userId}")

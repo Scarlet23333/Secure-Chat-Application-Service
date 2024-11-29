@@ -1,0 +1,52 @@
+digraph domain {
+  edge [ fontsize = 11 ];
+  node [ shape=record ];
+  subgraph cluster_0 {
+    label = "com.example.chatserver.repositories";
+    ChatRoomRepository [ label = "{ChatRoomRepository | + findByChatRoomId(String) : ChatRoom\l}" ] 
+    MessageRepository [ label = "{MessageRepository | + deleteByChatRoomId(String)\l+ deleteByChatRoomIdAndTimestamp(String, long)\l+ findByChatRoomId(String, Sort) : List\<Message\>\l+ findByChatRoomIdAndTimestamp(String, long) : Message\l}" ] 
+    UserRepository [ label = "{UserRepository | + findByUserId(String) : User\l}" ] 
+  }
+  subgraph cluster_1 {
+    label = "com.example.chatserver.utils";
+    RSAUtil [ label = "{RSAUtil | + decodePublicKey(encodedKey : String) : PublicKey\l+ decrypt(encryptedText : String, privateKey : PrivateKey) : String\l+ encrypt(plainText : String, publicKey : PublicKey) : String\l+ generateKeyPair() : KeyPair\l+ privateKeyToString(privateKey : PrivateKey) : String\l+ publicKeyToString(publicKey : PublicKey) : String\l}" ] 
+    TimeConvertUtil [ label = "{TimeConvertUtil | + localDateTimeToTimestamp(localDateTime : LocalDateTime) : long\l+ timestampToLocalDateTime(timestamp : long) : LocalDateTime\l}" ] 
+  }
+  subgraph cluster_2 {
+    label = "com.example.chatserver.controllers";
+    AuthController [ label = "{AuthController | + changePassword(userId : String, password : String, newPassword : String, publicKey : String) : ResponseEntity\<String\>\l+ deleteFriend(userId : String, friendId : String) : ResponseEntity\<String\>\l+ getChatRoomIdSet(userId : String) : ResponseEntity\<Set\<String\>\>\l+ getContact(userId : String) : ResponseEntity\<User\>\l+ getFriendApplicationSet(userId : String) : ResponseEntity\<Set\<String\>\>\l+ getPublicKey(userId : String) : ResponseEntity\<String\>\l+ login(userId : String, password : String) : ResponseEntity\<User\>\l+ newFriendApplication(userId : String, friendId : String) : ResponseEntity\<String\>\l+ registerUser(user : User) : ResponseEntity\<String\>\l+ rejectFriendApplication(userId : String, friendId : String) : ResponseEntity\<String\>\l+ updateUser(userId : String, user : User) : ResponseEntity\<String\>\l}" ] 
+    ChatRoomController [ label = "{ChatRoomController | + deleteChatRoom(chatRoomId : String, senderId : String) : ResponseEntity\<String\>\l+ deleteChatRoomMember(chatRoomId : String, userId : String, senderId : String) : ResponseEntity\<String\>\l+ getChatRoom(chatRoomId : String) : ResponseEntity\<ChatRoom\>\l+ postChatRoom(chatRoom : ChatRoom) : ResponseEntity\<String\>\l+ putChatRoomMember(chatRoomId : String, userId : String) : ResponseEntity\<String\>\l}" ] 
+    MessageController [ label = "{MessageController | + deleteMessage(chatRoomId : String, timestamp : long) : ResponseEntity\<String\>\l+ getMessages(chatRoomId : String) : ResponseEntity\<List\<Message\>\>\l+ sendMessage(chatRoomId : String, message : Message) : ResponseEntity\<String\>\l}" ] 
+  }
+  subgraph cluster_3 {
+    label = "com.example.chatserver.config";
+    WebSocketConfig [ label = "{WebSocketConfig | + configureMessageBroker(registry : MessageBrokerRegistry)\l+ registerStompEndpoints(registry : StompEndpointRegistry)\l}" ] 
+  }
+  subgraph cluster_4 {
+    label = "com.example.chatserver.models";
+    ChatRoom [ label = "{ChatRoom | + canEqual(other : Object) : boolean\l+ equals(o : Object) : boolean\l+ getChatRoomId() : String\l+ getChatRoomName() : String\l+ getMemberIdList() : List\<String\>\l+ hashCode() : int\l+ isGroupChatRoom() : boolean\l+ setChatRoomId(chatRoomId : String)\l+ setChatRoomName(chatRoomName : String)\l+ setGroupChatRoom(isGroupChatRoom : boolean)\l+ setMemberIdList(memberIdlist : List\<String\>)\l+ toString() : String\l}" ] 
+    Message [ label = "{Message | + canEqual(other : Object) : boolean\l+ equals(o : Object) : boolean\l+ getChatRoomId() : String\l+ getContent() : String\l+ getSenderId() : String\l+ getTimestamp() : long\l+ hashCode() : int\l+ setChatRoomId(chatRoomId : String)\l+ setContent(content : String)\l+ setSenderId(senderId : String)\l+ setTimestamp(timestamp : long)\l+ toString() : String\l}" ] 
+    User [ label = "{User | + canEqual(other : Object) : boolean\l+ equals(o : Object) : boolean\l+ getChatRoomIdSet() : Set\<String\>\l+ getFriendApplicationSenderIdSet() : Set\<String\>\l+ getFriendIdSet() : Set\<String\>\l+ getPassword() : String\l+ getProfile() : String\l+ getPublicKey() : String\l+ getUserId() : String\l+ getUsername() : String\l+ hashCode() : int\l+ setChatRoomIdSet(chatRoomIdSet : Set\<String\>)\l+ setFriendApplicationSenderIdSet(friendApplicationSenderIdSet : Set\<String\>)\l+ setFriendIdSet(friendIdSet : Set\<String\>)\l+ setPassword(password : String)\l+ setProfile(profile : String)\l+ setPublicKey(publicKey : String)\l+ setUserId(userId : String)\l+ setUsername(username : String)\l+ toString() : String\l}" ] 
+  }
+  subgraph cluster_5 {
+    label = "com.example.chatserver";
+    ChatServerApplication [ label = "{ChatServerApplication | + main(args : String[])\l}" ] 
+  }
+  subgraph cluster_6 {
+    label = "com.example.chatserver.services";
+    AuthService [ label = "{AuthService | + changePassword(userId : String, password : String, newPassword : String, publicKey : String) : boolean\l+ createUser(user : User) : boolean\l+ deleteFriend(userId : String, friendId : String)\l+ deleteFriendApplication(userId : String, friendId : String)\l+ getChatRoomIdSet(userId : String) : Set\<String\>\l+ getContact(userId : String) : User\l+ getFriendApplications(userId : String) : Set\<String\>\l+ getPublicKey(userId : String) : String\l+ login(userId : String, password : String) : User\l+ newFriendApplication(userId : String, friendId : String) : String\l+ updateUser(userId : String, user : User)\l}" ] 
+    ChatRoomService [ label = "{ChatRoomService | + addChatRoomMember(chatRoomId : String, userId : String)\l+ createChatRoom(chatRoom : ChatRoom) : String\l+ deleteChatRoom(chatRoomId : String, senderId : String) : boolean\l+ deleteChatRoomMember(chatRoomId : String, userId : String, senderId : String) : boolean\l+ getChatRoom(chatRoomId : String) : ChatRoom\l+ updateAllChatRoomIdSet(chatRoom : ChatRoom, isAdd : boolean)\l+ updateChatRoomIdSet(chatRoomId : String, userId : String, isAdd : boolean)\l}" ] 
+    MessageService [ label = "{MessageService | + deleteMessage(charRoomId : String, timestamp : long)\l+ getMessages(chatRoomId : String) : List\<Message\>\l+ saveMessage(message : Message) : boolean\l}" ] 
+  }
+  MessageService -> ChatRoomRepository [ dir=back arrowtail=odiamond color=slategray];
+  AuthService -> ChatRoomService [ dir=back arrowtail=odiamond color=slategray];
+  ChatRoomController -> ChatRoomService [ dir=back arrowtail=odiamond color=slategray];
+  AuthController -> AuthService [ dir=back arrowtail=odiamond color=slategray];
+  MessageService -> MessageRepository [ dir=back arrowtail=odiamond color=slategray];
+  ChatRoomService -> UserRepository [ dir=back arrowtail=odiamond color=slategray];
+  AuthService -> UserRepository [ dir=back arrowtail=odiamond color=slategray];
+  ChatRoomService -> MessageRepository [ dir=back arrowtail=odiamond color=slategray];
+  MessageController -> MessageService [ dir=back arrowtail=odiamond color=slategray];
+  AuthService -> ChatRoomRepository [ dir=back arrowtail=odiamond color=slategray];
+  ChatRoomService -> ChatRoomRepository [ dir=back arrowtail=odiamond color=slategray];
+}
